@@ -20,9 +20,15 @@ public interface FoodItemRepository extends JpaRepository<FoodItem, Long> {
 
     List<FoodItem> findByDonor(User donor);
 
+    List<FoodItem> findByDonorOrderByCreatedAtDesc(User donor);
+
     List<FoodItem> findByStatus(FoodStatus status);
 
+    List<FoodItem> findByStatusOrderByCreatedAtDesc(FoodStatus status);
+
     List<FoodItem> findByStatusIn(List<FoodStatus> statuses);
+
+    List<FoodItem> findAllByOrderByCreatedAtDesc();
 
     List<FoodItem> findByCategory(FoodCategory category);
 

@@ -22,8 +22,12 @@ public class FoodRequestController {
     @PostMapping
     @PreAuthorize("hasRole('RECEIVER')")
     public ResponseEntity<FoodRequestDTO> createRequest(@RequestBody Map<String, Object> payload, Authentication authentication) {
-        Long foodItemId = Long.valueOf(payload.get("foodItemId").toString());
-        Double quantity = Double.valueOf(payload.get("requestedQuantity").toString());
+        Object foodIdObj = payload.get("foodItemId");
+        Long foodItemId = (foodIdObj instanceof Number) ? ((Number) foodIdObj).longValue() : Long.valueOf(foodIdObj.toString());
+
+        Object qtyObj = payload.get("requestedQuantity");
+        Double quantity = (qtyObj instanceof Number) ? ((Number) qtyObj).doubleValue() : Double.valueOf(qtyObj.toString());
+
         String notes = payload.containsKey("notes") && payload.get("notes") != null ? payload.get("notes").toString() : "";
 
         FoodRequestDTO created = foodRequestService.createRequest(foodItemId, quantity, notes, authentication.getName());
@@ -46,6 +50,39 @@ public class FoodRequestController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<FoodRequestDTO> approveRequest(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(foodRequestService.approveRequest(id, authentication.getName()));
+    }
+
+    @PutMapping("/{id}/allocate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<FoodRequestDTO> allocateRequest(
+            @PathVariable Long id,
+            @RequestBody(required = false) Map<String, Object> payload,
+            Authentication authentication
+    ) {
+        String pickupLocation = payload != null && payload.get("pickupLocation") != null ? payload.get("pickupLocation").toString() : null;
+        java.time.LocalDateTime pickupDate = null;
+        if (payload != null && payload.get("pickupDate") != null) {
+            pickupDate = java.time.LocalDateTime.parse(payload.get("pickupDate").toString());
+        }
+        return ResponseEntity.ok(foodRequestService.allocateRequest(id, pickupLocation, pickupDate, authentication.getName()));
+    }
+
+    @PutMapping("/{id}/ready-for-pickup")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DONOR')")
+    public ResponseEntity<FoodRequestDTO> markReadyForPickup(@PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(foodRequestService.markReadyForPickup(id, authentication.getName()));
+    }
+
+    @PutMapping("/{id}/picked-up")
+    @PreAuthorize("hasAnyRole('RECEIVER', 'ADMIN')")
+    public ResponseEntity<FoodRequestDTO> markPickedUp(@PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(foodRequestService.markPickedUp(id, authentication.getName()));
+    }
+
+    @PutMapping("/{id}/complete")
+    @PreAuthorize("hasAnyRole('RECEIVER', 'ADMIN')")
+    public ResponseEntity<FoodRequestDTO> markCompleted(@PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(foodRequestService.markCompleted(id, authentication.getName()));
     }
 
     @PutMapping("/{id}/reject")

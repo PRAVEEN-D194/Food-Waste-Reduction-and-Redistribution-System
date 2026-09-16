@@ -44,6 +44,8 @@ public class FoodItemDTO {
 
     private String description;
     private FoodStatus status;
+    private Double remainingQuantity;
+    private Boolean hasReceiverRequests;
 
     public FoodItemDTO() {}
 
@@ -61,6 +63,12 @@ public class FoodItemDTO {
 
     public Double getQuantity() { return quantity; }
     public void setQuantity(Double quantity) { this.quantity = quantity; }
+
+    public Double getRemainingQuantity() { return remainingQuantity != null ? remainingQuantity : quantity; }
+    public void setRemainingQuantity(Double remainingQuantity) { this.remainingQuantity = remainingQuantity; }
+
+    public Boolean getHasReceiverRequests() { return hasReceiverRequests != null ? hasReceiverRequests : false; }
+    public void setHasReceiverRequests(Boolean hasReceiverRequests) { this.hasReceiverRequests = hasReceiverRequests; }
 
     public String getUnit() { return unit; }
     public void setUnit(String unit) { this.unit = unit; }

@@ -29,6 +29,7 @@ public class FoodHistory {
     private FoodStatus newStatus;
 
     private String performedBy;
+    private String performedByRole;
 
     @Column(nullable = false)
     private LocalDateTime timestamp;
@@ -57,6 +58,19 @@ public class FoodHistory {
         this.timestamp = LocalDateTime.now();
     }
 
+    public FoodHistory(Long foodId, String foodCode, String foodName, String action, FoodStatus previousStatus, FoodStatus newStatus, String performedBy, String performedByRole, String remarks) {
+        this.foodId = foodId;
+        this.foodCode = foodCode;
+        this.foodName = foodName;
+        this.action = action;
+        this.previousStatus = previousStatus;
+        this.newStatus = newStatus;
+        this.performedBy = performedBy;
+        this.performedByRole = performedByRole;
+        this.remarks = remarks;
+        this.timestamp = LocalDateTime.now();
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -80,6 +94,9 @@ public class FoodHistory {
 
     public String getPerformedBy() { return performedBy; }
     public void setPerformedBy(String performedBy) { this.performedBy = performedBy; }
+
+    public String getPerformedByRole() { return performedByRole; }
+    public void setPerformedByRole(String performedByRole) { this.performedByRole = performedByRole; }
 
     public LocalDateTime getTimestamp() { return timestamp; }
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }

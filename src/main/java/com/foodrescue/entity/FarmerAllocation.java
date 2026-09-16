@@ -26,16 +26,24 @@ public class FarmerAllocation {
     private String pickupLocation;
     private LocalDateTime pickupDate;
     private String notes;
+    private String reason; // reason / intended approved use
+    private String instructions;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private FarmerAllocationStatus status;
 
+    private LocalDateTime requestDate;
     private LocalDateTime allocatedAt;
     private LocalDateTime respondedAt;
+    private LocalDateTime collectedAt;
+    private LocalDateTime completedAt;
 
     @PrePersist
     protected void onCreate() {
+        if (requestDate == null) {
+            requestDate = LocalDateTime.now();
+        }
         if (allocatedAt == null) {
             allocatedAt = LocalDateTime.now();
         }
@@ -67,12 +75,27 @@ public class FarmerAllocation {
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
 
+    public String getReason() { return reason; }
+    public void setReason(String reason) { this.reason = reason; }
+
+    public String getInstructions() { return instructions; }
+    public void setInstructions(String instructions) { this.instructions = instructions; }
+
     public FarmerAllocationStatus getStatus() { return status; }
     public void setStatus(FarmerAllocationStatus status) { this.status = status; }
+
+    public LocalDateTime getRequestDate() { return requestDate; }
+    public void setRequestDate(LocalDateTime requestDate) { this.requestDate = requestDate; }
 
     public LocalDateTime getAllocatedAt() { return allocatedAt; }
     public void setAllocatedAt(LocalDateTime allocatedAt) { this.allocatedAt = allocatedAt; }
 
     public LocalDateTime getRespondedAt() { return respondedAt; }
     public void setRespondedAt(LocalDateTime respondedAt) { this.respondedAt = respondedAt; }
+
+    public LocalDateTime getCollectedAt() { return collectedAt; }
+    public void setCollectedAt(LocalDateTime collectedAt) { this.collectedAt = collectedAt; }
+
+    public LocalDateTime getCompletedAt() { return completedAt; }
+    public void setCompletedAt(LocalDateTime completedAt) { this.completedAt = completedAt; }
 }

@@ -25,6 +25,9 @@ public class Notification {
 
     private String type; // ALERT, INFO, SUCCESS, WARNING
 
+    private Long relatedFoodId;
+    private Long relatedRequestId;
+
     private Boolean isRead;
 
     private LocalDateTime createdAt;
@@ -51,6 +54,18 @@ public class Notification {
         this.createdAt = LocalDateTime.now();
     }
 
+    public Notification(Role targetRole, Long targetUserId, String title, String message, String type, Long relatedFoodId, Long relatedRequestId) {
+        this.targetRole = targetRole;
+        this.targetUserId = targetUserId;
+        this.title = title;
+        this.message = message;
+        this.type = type;
+        this.relatedFoodId = relatedFoodId;
+        this.relatedRequestId = relatedRequestId;
+        this.isRead = false;
+        this.createdAt = LocalDateTime.now();
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -68,6 +83,12 @@ public class Notification {
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
+
+    public Long getRelatedFoodId() { return relatedFoodId; }
+    public void setRelatedFoodId(Long relatedFoodId) { this.relatedFoodId = relatedFoodId; }
+
+    public Long getRelatedRequestId() { return relatedRequestId; }
+    public void setRelatedRequestId(Long relatedRequestId) { this.relatedRequestId = relatedRequestId; }
 
     public Boolean getIsRead() { return isRead; }
     public void setIsRead(Boolean isRead) { this.isRead = isRead; }

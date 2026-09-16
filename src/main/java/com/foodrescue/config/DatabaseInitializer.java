@@ -171,6 +171,8 @@ public class DatabaseInitializer implements CommandLineRunner {
         item.setFoodName(name);
         item.setCategory(cat);
         item.setQuantity(qty);
+        item.setRemainingQuantity(qty);
+        item.setIsActive(true);
         item.setUnit(unit);
         item.setDonor(donor);
         item.setDonationDate(prepDate);

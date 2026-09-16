@@ -47,12 +47,9 @@ com\foodrescue\repository\FoodAllocationRepository.class
 com\foodrescue\security\JwtUtils.class
 com\foodrescue\dto\FoodItemDTO.class
 com\foodrescue\repository\FarmerAllocationRepository.class
-com\foodrescue\controller\FoodHistoryController.class
 com\foodrescue\repository\FoodHistoryRepository.class
 com\foodrescue\repository\FoodItemRepository.class
-com\foodrescue\service\FoodService.class
 com\foodrescue\controller\FarmerAllocationController.class
 com\foodrescue\repository\DonorRepository.class
-com\foodrescue\controller\FoodController.class
 com\foodrescue\service\FoodRequestService.class
 com\foodrescue\service\AllocationService.class

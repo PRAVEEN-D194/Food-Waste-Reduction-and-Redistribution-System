@@ -26,6 +26,10 @@ public class FoodItem {
     @Column(nullable = false)
     private Double quantity;
 
+    private Double remainingQuantity;
+
+    private Boolean isActive;
+
     @Column(nullable = false)
     private String unit;
 
@@ -63,11 +67,20 @@ public class FoodItem {
         if (status == null) {
             status = FoodStatus.AVAILABLE;
         }
+        if (remainingQuantity == null) {
+            remainingQuantity = quantity;
+        }
+        if (isActive == null) {
+            isActive = true;
+        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+        if (remainingQuantity == null) {
+            remainingQuantity = quantity;
+        }
     }
 
     public FoodItem() {}
@@ -86,6 +99,12 @@ public class FoodItem {
 
     public Double getQuantity() { return quantity; }
     public void setQuantity(Double quantity) { this.quantity = quantity; }
+
+    public Double getRemainingQuantity() { return remainingQuantity != null ? remainingQuantity : quantity; }
+    public void setRemainingQuantity(Double remainingQuantity) { this.remainingQuantity = remainingQuantity; }
+
+    public Boolean getIsActive() { return isActive != null ? isActive : true; }
+    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
 
     public String getUnit() { return unit; }
     public void setUnit(String unit) { this.unit = unit; }

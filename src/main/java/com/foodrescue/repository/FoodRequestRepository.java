@@ -12,7 +12,11 @@ import java.util.List;
 @Repository
 public interface FoodRequestRepository extends JpaRepository<FoodRequest, Long> {
     List<FoodRequest> findByReceiver(User receiver);
+    List<FoodRequest> findByReceiverOrderByRequestDateDesc(User receiver);
     List<FoodRequest> findByFoodItem(FoodItem foodItem);
     List<FoodRequest> findByStatus(RequestStatus status);
     List<FoodRequest> findByReceiverId(Long receiverId);
+    List<FoodRequest> findAllByOrderByRequestDateDesc();
+    long countByFoodItem(FoodItem foodItem);
+    long countByFoodItemAndStatusNot(FoodItem foodItem, RequestStatus status);
 }

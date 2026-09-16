@@ -22,6 +22,15 @@ public class FoodRequestDTO {
     private LocalDateTime requestDate;
     private String notes;
 
+    private Double allocatedQuantity;
+    private String pickupLocation;
+    private LocalDateTime pickupDate;
+    private LocalDateTime approvedAt;
+    private LocalDateTime allocatedAt;
+    private LocalDateTime readyForPickupAt;
+    private LocalDateTime pickedUpAt;
+    private LocalDateTime completedAt;
+
     public FoodRequestDTO() {}
 
     public Long getId() { return id; }
@@ -65,4 +74,28 @@ public class FoodRequestDTO {
 
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
+
+    public Double getAllocatedQuantity() { return allocatedQuantity; }
+    public void setAllocatedQuantity(Double allocatedQuantity) { this.allocatedQuantity = allocatedQuantity; }
+
+    public String getPickupLocation() { return pickupLocation; }
+    public void setPickupLocation(String pickupLocation) { this.pickupLocation = pickupLocation; }
+
+    public LocalDateTime getPickupDate() { return pickupDate; }
+    public void setPickupDate(LocalDateTime pickupDate) { this.pickupDate = pickupDate; }
+
+    public LocalDateTime getApprovedAt() { return approvedAt; }
+    public void setApprovedAt(LocalDateTime approvedAt) { this.approvedAt = approvedAt; }
+
+    public LocalDateTime getAllocatedAt() { return allocatedAt; }
+    public void setAllocatedAt(LocalDateTime allocatedAt) { this.allocatedAt = allocatedAt; }
+
+    public LocalDateTime getReadyForPickupAt() { return readyForPickupAt; }
+    public void setReadyForPickupAt(LocalDateTime readyForPickupAt) { this.readyForPickupAt = readyForPickupAt; }
+
+    public LocalDateTime getPickedUpAt() { return pickedUpAt; }
+    public void setPickedUpAt(LocalDateTime pickedUpAt) { this.pickedUpAt = pickedUpAt; }
+
+    public LocalDateTime getCompletedAt() { return completedAt; }
+    public void setCompletedAt(LocalDateTime completedAt) { this.completedAt = completedAt; }
 }

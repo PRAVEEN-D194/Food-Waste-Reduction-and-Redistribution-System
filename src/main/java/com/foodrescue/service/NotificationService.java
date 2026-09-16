@@ -19,6 +19,11 @@ public class NotificationService {
         return notificationRepository.save(notification);
     }
 
+    public Notification createNotification(Role targetRole, Long targetUserId, String title, String message, String type, Long foodId, Long requestId) {
+        Notification notification = new Notification(targetRole, targetUserId, title, message, type, foodId, requestId);
+        return notificationRepository.save(notification);
+    }
+
     public List<Notification> getNotificationsForUser(Long userId, Role role) {
         return notificationRepository.findByTargetRoleOrTargetUserIdOrderByCreatedAtDesc(role, userId);
     }
@@ -28,5 +33,13 @@ public class NotificationService {
                 .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
         notification.setIsRead(true);
         return notificationRepository.save(notification);
+    }
+
+    public void markAllAsRead(Long userId, Role role) {
+        List<Notification> list = notificationRepository.findByTargetRoleOrTargetUserId(role, userId);
+        for (Notification n : list) {
+            n.setIsRead(true);
+        }
+        notificationRepository.saveAll(list);
     }
 }

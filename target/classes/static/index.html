@@ -193,14 +193,17 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
-                    <!-- Notifications Dropdown -->
+                    <!-- Notifications Dropdown (Feature #14 & #15) -->
                     <div class="dropdown">
-                        <button class="btn btn-outline-secondary btn-sm position-relative dropdown-toggle" type="button" id="notifDropdown" data-bs-toggle="dropdown">
+                        <button class="btn btn-outline-secondary btn-sm position-relative dropdown-toggle" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa-solid fa-bell"></i>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" id="notifBadgeCount">0</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow p-2" style="width: 320px; max-height: 380px; overflow-y: auto;" id="notifList">
-                            <li class="dropdown-header fw-bold border-bottom pb-2">Notifications</li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow p-2" style="width: 350px; max-height: 420px; overflow-y: auto;" id="notifList">
+                            <li class="dropdown-header d-flex justify-content-between align-items-center border-bottom pb-2">
+                                <span class="fw-bold">Notifications</span>
+                                <button class="btn btn-link btn-sm p-0 text-decoration-none text-success small" onclick="markAllNotificationsAsRead()">Mark All as Read</button>
+                            </li>
                             <li class="text-muted small text-center py-3" id="noNotifMsg">No new notifications</li>
                         </ul>
                     </div>
@@ -294,6 +297,114 @@
                         <div class="d-flex justify-content-end gap-2">
                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-success fw-bold px-4">Submit Donation</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: DONOR REMOVE FOOD CONFIRMATION (Feature #8, #9, #10, #21) -->
+    <div class="modal fade" id="removeFoodModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-trash me-2"></i>Remove Food Donation</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="removeFoodId">
+                    <div class="text-center py-2">
+                        <i class="fa-solid fa-triangle-exclamation fa-3x text-warning mb-3"></i>
+                        <h5 class="fw-bold text-dark mb-2">Are you sure?</h5>
+                        <p class="text-muted mb-0" id="removeFoodNameText">This food will be removed from your active donations.</p>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger fw-bold px-4" id="confirmRemoveFoodBtn" onclick="confirmRemoveFoodAction()">
+                        <i class="fa-solid fa-trash me-1"></i>Remove Food
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: FARMER REQUEST EXPIRED FOOD (Feature #2, #18) -->
+    <div class="modal fade" id="farmerRequestModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-tractor me-2"></i>Request Expired Food</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning small mb-3">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                        <strong>Food Safety Compliance:</strong> Expired food is not available for human consumption. Any agricultural, composting, animal-feed, or other non-human use must follow applicable local safety and regulatory requirements.
+                    </div>
+                    <form id="farmerRequestForm">
+                        <input type="hidden" id="reqFoodId">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Expired Food Item</label>
+                            <input type="text" id="reqFoodName" class="form-control bg-light" readonly>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Available Quantity</label>
+                                <input type="text" id="reqAvailableQty" class="form-control bg-light" readonly>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Requested Quantity</label>
+                                <input type="number" step="0.1" min="1" id="reqQuantity" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Reason / Intended Approved Use</label>
+                            <select id="reqReason" class="form-select" required>
+                                <option value="Organic Soil Composting">Organic Soil Composting</option>
+                                <option value="Bio-gas / Bio-energy Generation">Bio-gas / Bio-energy Generation</option>
+                                <option value="Livestock / Animal Feed (Regulatory Approved)">Livestock / Animal Feed (Regulatory Approved)</option>
+                                <option value="Agricultural Soil Enrichment">Agricultural Soil Enrichment</option>
+                                <option value="Other Approved Non-Human Workflow">Other Approved Non-Human Workflow</option>
+                            </select>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-warning fw-bold text-dark">Submit Request to Admin</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADMIN ALLOCATE RECEIVER REQUEST -->
+    <div class="modal fade" id="allocateReceiverModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-box-open me-2"></i>Allocate Food to Receiver</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="allocateReceiverForm">
+                        <input type="hidden" id="allocRequestId">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Food Item & Receiver</label>
+                            <input type="text" id="allocInfo" class="form-control bg-light" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Pickup Location</label>
+                            <input type="text" id="allocPickupLocation" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Scheduled Pickup Date & Time</label>
+                            <input type="datetime-local" id="allocPickupDate" class="form-control" required>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary fw-bold">Confirm Allocation</button>
                         </div>
                     </form>
                 </div>

@@ -4,5 +4,9 @@ public enum RequestStatus {
     PENDING,
     APPROVED,
     REJECTED,
-    ALLOCATED
+    ALLOCATED,
+    READY_FOR_PICKUP,
+    PICKED_UP,
+    COMPLETED,
+    CANCELLED
 }

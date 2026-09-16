@@ -156,13 +156,159 @@ body {
 }
 
 /* Custom Badges */
-.badge-available { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-.badge-requested { background-color: #e0f2fe; color: #075985; border: 1px solid #bae6fd; }
-.badge-allocated { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-.badge-distributed { background-color: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+.badge-available { background-color: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; font-weight: 600; }
+.badge-requested { background-color: #e0f2fe; color: #075985; border: 1px solid #bae6fd; font-weight: 600; }
+.badge-approved { background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; font-weight: 600; }
+.badge-allocated { background-color: #fef3c7; color: #92400e; border: 1px solid #fde68a; font-weight: 600; }
+.badge-ready-pickup { background-color: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; font-weight: 600; }
+.badge-picked-up { background-color: #fce7f3; color: #9d174d; border: 1px solid #fbcfe8; font-weight: 600; }
+.badge-distributed { background-color: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; font-weight: 600; }
 .badge-expired { background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; font-weight: 700; }
-.badge-farmer { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; }
-.badge-completed { background-color: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+.badge-farmer { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #e9d5ff; font-weight: 600; }
+.badge-completed { background-color: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; font-weight: 600; }
+.badge-removed { background-color: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; font-weight: 600; text-decoration: line-through; }
+.badge-rejected { background-color: #fee2e2; color: #dc2626; border: 1px solid #fecaca; font-weight: 600; }
+
+/* Receiver Request Stepper / Progress Timeline Component (Feature #6) */
+.stepper-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin: 1.25rem 0 0.5rem 0;
+    position: relative;
+}
+
+.stepper-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    text-align: center;
+}
+
+.stepper-item::before {
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #e2e8f0;
+    width: 100%;
+    top: 15px;
+    left: -50%;
+    z-index: 1;
+}
+
+.stepper-item:first-child::before {
+    content: none;
+}
+
+.stepper-item .step-counter {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.stepper-item .step-name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-top: 0.4rem;
+}
+
+/* Completed Step */
+.stepper-item.completed .step-counter {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border-color: var(--primary-color);
+}
+
+.stepper-item.completed::before {
+    border-color: var(--primary-color);
+}
+
+.stepper-item.completed .step-name {
+    color: #065f46;
+    font-weight: 700;
+}
+
+/* Active Step */
+.stepper-item.active .step-counter {
+    background-color: var(--secondary-color);
+    color: #ffffff;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+    animation: pulseActive 2s infinite;
+}
+
+.stepper-item.active .step-name {
+    color: var(--secondary-color);
+    font-weight: 700;
+}
+
+/* Rejected Step */
+.stepper-item.rejected .step-counter {
+    background-color: var(--danger-color);
+    color: #ffffff;
+    border-color: var(--danger-color);
+}
+
+.stepper-item.rejected .step-name {
+    color: var(--danger-color);
+    font-weight: 700;
+}
+
+@keyframes pulseActive {
+    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+    70% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+/* Notification Item Styles */
+.notif-item {
+    transition: background-color 0.2s ease;
+    border-radius: var(--radius-md);
+}
+
+.notif-item.unread {
+    background-color: #f0fdf4;
+    border-left: 3px solid var(--primary-color);
+}
+
+.notif-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: inline-block;
+}
+
+/* Filter pills */
+.nav-pills-custom .nav-link {
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    margin-right: 0.4rem;
+    margin-bottom: 0.4rem;
+    background: #ffffff;
+}
+
+.nav-pills-custom .nav-link.active {
+    background: var(--primary-color);
+    color: #ffffff;
+    border-color: var(--primary-color);
+}
 
 /* Status timeline for history */
 .timeline {
@@ -207,6 +353,11 @@ body {
 .timeline-item.farmer::before {
     background: #8b5cf6;
     box-shadow: 0 0 0 2px #8b5cf6;
+}
+
+.timeline-item.removed::before {
+    background: #64748b;
+    box-shadow: 0 0 0 2px #64748b;
 }
 
 /* Modals */
@@ -289,3 +440,4 @@ body {
     right: 1.5rem;
     z-index: 9999;
 }
+

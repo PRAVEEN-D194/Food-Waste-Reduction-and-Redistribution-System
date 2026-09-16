@@ -51,6 +51,7 @@ public class ExpirySchedulerService {
                         oldStatus,
                         FoodStatus.EXPIRED,
                         "System Expiry Scheduler",
+                        "SYSTEM",
                         "Food reached expiry date (" + food.getExpiryDate() + "). Automatically marked EXPIRED and flagged for farmer redirection."
                 );
                 foodHistoryRepository.save(history);

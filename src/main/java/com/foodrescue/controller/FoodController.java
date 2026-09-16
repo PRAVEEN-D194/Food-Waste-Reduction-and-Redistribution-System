@@ -74,4 +74,28 @@ public class FoodController {
         FoodItemDTO updated = foodService.updateFoodStatus(id, status, action, authentication.getName(), remarks);
         return ResponseEntity.ok(updated);
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('DONOR', 'ADMIN')")
+    public ResponseEntity<?> removeFood(@PathVariable Long id, Authentication authentication) {
+        try {
+            FoodItemDTO removed = foodService.removeFood(id, authentication.getName());
+            return ResponseEntity.ok(removed);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(java.util.Map.of("message", e.getMessage()));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(java.util.Map.of("message", e.getMessage()));
+        }
+    }
+
+    @PutMapping("/{id}/remove")
+    @PreAuthorize("hasAnyRole('DONOR', 'ADMIN')")
+    public ResponseEntity<?> removeFoodPut(@PathVariable Long id, Authentication authentication) {
+        return removeFood(id, authentication);
+    }
+
+    @GetMapping("/{id}/history")
+    public ResponseEntity<?> getFoodHistory(@PathVariable Long id) {
+        return ResponseEntity.ok(foodService.getFoodHistory(id));
+    }
 }

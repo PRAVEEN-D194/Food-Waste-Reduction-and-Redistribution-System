@@ -23,9 +23,14 @@ public class AllocationController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<FoodAllocation> createAllocation(@RequestBody Map<String, Object> payload, Authentication authentication) {
-        Long foodItemId = Long.valueOf(payload.get("foodItemId").toString());
-        Long receiverUserId = Long.valueOf(payload.get("receiverUserId").toString());
-        Double quantity = Double.valueOf(payload.get("quantity").toString());
+        Object foodIdObj = payload.get("foodItemId");
+        Long foodItemId = (foodIdObj instanceof Number) ? ((Number) foodIdObj).longValue() : Long.valueOf(foodIdObj.toString());
+
+        Object recObj = payload.get("receiverUserId");
+        Long receiverUserId = (recObj instanceof Number) ? ((Number) recObj).longValue() : Long.valueOf(recObj.toString());
+
+        Object qtyObj = payload.get("quantity");
+        Double quantity = (qtyObj instanceof Number) ? ((Number) qtyObj).doubleValue() : Double.valueOf(qtyObj.toString());
 
         String pickupLocation = payload.containsKey("pickupLocation") && payload.get("pickupLocation") != null ? payload.get("pickupLocation").toString() : null;
         String notes = payload.containsKey("notes") && payload.get("notes") != null ? payload.get("notes").toString() : null;

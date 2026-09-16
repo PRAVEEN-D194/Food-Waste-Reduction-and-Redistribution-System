@@ -2,6 +2,7 @@ package com.foodrescue.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -10,8 +11,11 @@ import java.util.Date;
 @Component
 public class JwtUtils {
 
-    private final String jwtSecret = "FoodRescueSuperSecretKeyForJWTTokenGeneration2026SecureKey!";
-    private final int jwtExpirationMs = 86400000; // 24 hours
+    @Value("${app.jwtSecret:FoodRescueSuperSecretKeyForJWTTokenGeneration2026SecureKey!}")
+    private String jwtSecret;
+
+    @Value("${app.jwtExpirationMs:86400000}")
+    private int jwtExpirationMs;
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());

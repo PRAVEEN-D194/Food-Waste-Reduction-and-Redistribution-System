@@ -2,7 +2,11 @@ package com.foodrescue.enums;
 
 public enum FarmerAllocationStatus {
     PENDING,
+    APPROVED,
     ACCEPTED,
     REJECTED,
-    COMPLETED
+    ASSIGNED,
+    COLLECTED,
+    COMPLETED,
+    CANCELLED
 }

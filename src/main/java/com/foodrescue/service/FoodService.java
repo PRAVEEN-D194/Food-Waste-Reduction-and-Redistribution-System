@@ -11,6 +11,7 @@ import com.foodrescue.enums.Role;
 import com.foodrescue.repository.DonorRepository;
 import com.foodrescue.repository.FoodHistoryRepository;
 import com.foodrescue.repository.FoodItemRepository;
+import com.foodrescue.repository.FoodRequestRepository;
 import com.foodrescue.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,9 @@ public class FoodService {
     private FoodHistoryRepository foodHistoryRepository;
 
     @Autowired
+    private FoodRequestRepository foodRequestRepository;
+
+    @Autowired
     private NotificationService notificationService;
 
     @Transactional
@@ -50,6 +54,8 @@ public class FoodService {
         food.setFoodName(dto.getFoodName());
         food.setCategory(dto.getCategory());
         food.setQuantity(dto.getQuantity());
+        food.setRemainingQuantity(dto.getQuantity());
+        food.setIsActive(true);
         food.setUnit(dto.getUnit());
         food.setDonor(donor);
         food.setDonationDate(LocalDateTime.now());
@@ -73,11 +79,12 @@ public class FoodService {
                 savedFood.getId(),
                 savedFood.getFoodCode(),
                 savedFood.getFoodName(),
-                "FOOD_DONATED",
+                "FOOD_ADDED",
                 null,
                 FoodStatus.AVAILABLE,
                 donorName,
-                "Food item created and marked AVAILABLE"
+                "DONOR",
+                "Food item registered and marked AVAILABLE"
         );
         foodHistoryRepository.save(history);
 
@@ -87,10 +94,58 @@ public class FoodService {
                 null,
                 "New Food Donation",
                 "New food donation received: " + savedFood.getFoodName() + " (" + savedFood.getQuantity() + " " + savedFood.getUnit() + ") from " + donorName,
-                "INFO"
+                "INFO",
+                savedFood.getId(),
+                null
         );
 
         return convertToDTO(savedFood);
+    }
+
+    @Transactional
+    public FoodItemDTO removeFood(Long id, String username) {
+        FoodItem food = foodItemRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Food item not found with ID: " + id));
+
+        User currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+
+        // Security check: Only the owning donor or ADMIN can remove
+        if (currentUser.getRole() != Role.ROLE_ADMIN && !food.getDonor().getId().equals(currentUser.getId())) {
+            throw new SecurityException("Unauthorized: You can only remove your own food donations.");
+        }
+
+        // Feature 8, 9, 10, 11: Donor can remove ONLY if AVAILABLE and NO receiver request exists
+        if (food.getStatus() != FoodStatus.AVAILABLE) {
+            throw new IllegalStateException("Food cannot be removed because its status is " + food.getStatus() + " (only AVAILABLE food without requests can be removed).");
+        }
+
+        long requestCount = foodRequestRepository.countByFoodItem(food);
+        if (requestCount > 0) {
+            throw new IllegalStateException("Food cannot be removed because a receiver request already exists.");
+        }
+
+        FoodStatus oldStatus = food.getStatus();
+        food.setStatus(FoodStatus.REMOVED);
+        food.setIsActive(false);
+        FoodItem updated = foodItemRepository.save(food);
+
+        // Audit Trail
+        String donorName = currentUser.getFullName();
+        FoodHistory history = new FoodHistory(
+                updated.getId(),
+                updated.getFoodCode(),
+                updated.getFoodName(),
+                "FOOD_REMOVED",
+                oldStatus,
+                FoodStatus.REMOVED,
+                donorName,
+                currentUser.getRole().name(),
+                "Food donation removed by donor before any receiver requested it."
+        );
+        foodHistoryRepository.save(history);
+
+        return convertToDTO(updated);
     }
 
     public List<FoodItemDTO> searchFoodItems(String query, FoodCategory category, FoodStatus status, Long donorId) {
@@ -99,21 +154,23 @@ public class FoodService {
     }
 
     public List<FoodItemDTO> getAllFoodItems() {
-        return foodItemRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
+        return foodItemRepository.findAllByOrderByCreatedAtDesc().stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     public List<FoodItemDTO> getAvailableFoodItems() {
-        return foodItemRepository.findByStatus(FoodStatus.AVAILABLE).stream().map(this::convertToDTO).collect(Collectors.toList());
+        return foodItemRepository.findByStatusOrderByCreatedAtDesc(FoodStatus.AVAILABLE).stream()
+                .filter(f -> (f.getIsActive() == null || f.getIsActive()) && (f.getRemainingQuantity() == null || f.getRemainingQuantity() > 0))
+                .map(this::convertToDTO).collect(Collectors.toList());
     }
 
     public List<FoodItemDTO> getExpiredFoodItems() {
-        return foodItemRepository.findByStatus(FoodStatus.EXPIRED).stream().map(this::convertToDTO).collect(Collectors.toList());
+        return foodItemRepository.findByStatusOrderByCreatedAtDesc(FoodStatus.EXPIRED).stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     public List<FoodItemDTO> getFoodItemsByDonor(String username) {
         User donor = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Donor not found"));
-        return foodItemRepository.findByDonor(donor).stream().map(this::convertToDTO).collect(Collectors.toList());
+        return foodItemRepository.findByDonorOrderByCreatedAtDesc(donor).stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     public FoodItemDTO getFoodById(Long id) {
@@ -139,6 +196,7 @@ public class FoodService {
                 oldStatus,
                 newStatus,
                 performedBy,
+                "ADMIN",
                 remarks
         );
         foodHistoryRepository.save(history);
@@ -161,6 +219,7 @@ public class FoodService {
         dto.setFoodName(item.getFoodName());
         dto.setCategory(item.getCategory());
         dto.setQuantity(item.getQuantity());
+        dto.setRemainingQuantity(item.getRemainingQuantity());
         dto.setUnit(item.getUnit());
 
         if (item.getDonor() != null) {
@@ -180,6 +239,11 @@ public class FoodService {
         dto.setPickupLocation(item.getPickupLocation());
         dto.setDescription(item.getDescription());
         dto.setStatus(item.getStatus());
+
+        // Check if receiver requests exist for donor removal decision
+        long requestCount = foodRequestRepository.countByFoodItem(item);
+        dto.setHasReceiverRequests(requestCount > 0);
+
         return dto;
     }
 }
