@@ -145,7 +145,6 @@ function buildSidebarMenu() {
         menu.innerHTML = `
             <li class="nav-item"><a class="nav-link active" onclick="loadAvailableFood()"><i class="fa-solid fa-store"></i> Available Food Listings</a></li>
             <li class="nav-item"><a class="nav-link" onclick="loadMyRequests()"><i class="fa-solid fa-heart-pulse"></i> My Food Requests</a></li>
-            <li class="nav-item"><a class="nav-link" onclick="loadMyAllocations()"><i class="fa-solid fa-box-open"></i> Allocated & Received Food</a></li>
         `;
     } else if (role === 'ROLE_FARMER') {
         menu.innerHTML = `
@@ -482,11 +481,11 @@ async function loadMyDonations() {
                         </thead>
                         <tbody>
                             ${foods.map(f => {
-                                const isAvailable = (f.status === 'AVAILABLE');
-                                const hasRequests = (f.hasReceiverRequests === true);
-                                const canRemove = isAvailable && !hasRequests;
+        const isAvailable = (f.status === 'AVAILABLE');
+        const hasRequests = (f.hasReceiverRequests === true);
+        const canRemove = isAvailable && !hasRequests;
 
-                                return `
+        return `
                                     <tr>
                                         <td class="fw-bold text-success">${f.foodCode}</td>
                                         <td class="fw-bold">${f.foodName}</td>
@@ -523,7 +522,7 @@ async function loadMyDonations() {
                                         </td>
                                     </tr>
                                 `;
-                            }).join('')}
+    }).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -1164,25 +1163,25 @@ function renderRequestStepper(status) {
     return `
         <div class="stepper-wrapper">
             ${stages.map((st, index) => {
-                const rank = index + 1;
-                let stepClass = '';
-                let iconContent = rank;
+        const rank = index + 1;
+        let stepClass = '';
+        let iconContent = rank;
 
-                if (rank < currentRank) {
-                    stepClass = 'completed';
-                    iconContent = '<i class="fa-solid fa-check"></i>';
-                } else if (rank === currentRank) {
-                    stepClass = 'active';
-                    iconContent = '<i class="fa-solid fa-circle-dot"></i>';
-                }
+        if (rank < currentRank) {
+            stepClass = 'completed';
+            iconContent = '<i class="fa-solid fa-check"></i>';
+        } else if (rank === currentRank) {
+            stepClass = 'active';
+            iconContent = '<i class="fa-solid fa-circle-dot"></i>';
+        }
 
-                return `
+        return `
                     <div class="stepper-item ${stepClass}">
                         <div class="step-counter">${iconContent}</div>
                         <div class="step-name">${st.label}</div>
                     </div>
                 `;
-            }).join('')}
+    }).join('')}
         </div>
     `;
 }
@@ -1209,11 +1208,6 @@ async function receiverMarkCompleted(requestId) {
     } catch (err) {
         showToast('Update failed: ' + err.message, 'danger');
     }
-}
-
-async function loadMyAllocations() {
-    setPageTitle('Allocated & Received Food Items');
-    await loadMyRequests();
 }
 
 // -------------------------------------------------------------
@@ -1691,7 +1685,7 @@ async function markNotificationAsRead(id) {
     try {
         await apiFetch(`/api/notifications/${id}/read`, { method: 'PUT', silent: true });
         loadNotifications();
-    } catch (e) {}
+    } catch (e) { }
 }
 
 async function markAllNotificationsAsRead() {
@@ -1741,8 +1735,8 @@ function renderUserList(title, list, headers) {
                     </thead>
                     <tbody>
                         ${list.map(item => {
-                            const u = item.user || {};
-                            return `
+        const u = item.user || {};
+        return `
                                 <tr>
                                     <td class="fw-bold">${item.organizationName || item.farmName || u.fullName}</td>
                                     <td>${item.requiredFoodType || item.farmLocation || u.fullName}</td>
@@ -1751,7 +1745,7 @@ function renderUserList(title, list, headers) {
                                     <td>${u.address || 'N/A'}</td>
                                 </tr>
                             `;
-                        }).join('')}
+    }).join('')}
                     </tbody>
                 </table>
             </div>
