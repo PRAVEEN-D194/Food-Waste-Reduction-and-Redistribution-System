@@ -25,12 +25,64 @@
 }
 
 body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', 'Noto Sans Tamil', 'Latha', system-ui, -apple-system, sans-serif;
     background-color: var(--body-bg);
     color: var(--text-primary);
     min-height: 100vh;
     margin: 0;
     overflow-x: hidden;
+}
+
+/* Tamil Typography Enhancement */
+html[lang="ta"] body,
+html[lang="ta"] button,
+html[lang="ta"] input,
+html[lang="ta"] select,
+html[lang="ta"] textarea {
+    font-family: 'Noto Sans Tamil', 'Inter', 'Latha', system-ui, -apple-system, sans-serif;
+    letter-spacing: 0.01em;
+}
+
+/* Language Switcher Styling */
+.lang-switcher-dropdown .dropdown-toggle {
+    border: 1px solid var(--border-color);
+    background-color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-md);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s ease;
+}
+
+.lang-switcher-dropdown .dropdown-toggle:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.lang-switcher-auth {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.5rem;
+    z-index: 1050;
+}
+
+.lang-switcher-auth .dropdown-toggle {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    backdrop-filter: blur(8px);
+}
+
+.lang-switcher-auth .dropdown-toggle:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.dropdown-item.active, .dropdown-item:active {
+    background-color: var(--primary-color);
 }
 
 /* Sidebar Styling */

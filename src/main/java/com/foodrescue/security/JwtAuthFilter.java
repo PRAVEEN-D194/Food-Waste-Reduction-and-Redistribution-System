@@ -53,6 +53,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return headerAuth.substring(7);
         }
 
+        String paramAuth = request.getParameter("token");
+        if (StringUtils.hasText(paramAuth)) {
+            return paramAuth;
+        }
+
         return null;
     }
 }

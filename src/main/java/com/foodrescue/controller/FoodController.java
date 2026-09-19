@@ -94,6 +94,30 @@ public class FoodController {
         return removeFood(id, authentication);
     }
 
+    @Autowired
+    private com.foodrescue.service.FarmerAllocationService farmerAllocationService;
+
+    @PutMapping("/{id}/send-to-farmer")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> sendToFarmer(
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, Object> payload,
+            Authentication authentication
+    ) {
+        Long farmerUserId = Long.valueOf(payload.get("farmerId").toString());
+        Double quantity = payload.containsKey("quantity") && payload.get("quantity") != null ? Double.valueOf(payload.get("quantity").toString()) : null;
+        String pickupLocation = payload.containsKey("pickupLocation") && payload.get("pickupLocation") != null ? payload.get("pickupLocation").toString() : null;
+        String notes = payload.containsKey("notes") && payload.get("notes") != null ? payload.get("notes").toString() : null;
+
+        java.time.LocalDateTime pickupDate = null;
+        if (payload.containsKey("pickupDate") && payload.get("pickupDate") != null) {
+            pickupDate = java.time.LocalDateTime.parse(payload.get("pickupDate").toString());
+        }
+
+        var allocation = farmerAllocationService.allocateExpiredFoodToFarmer(id, farmerUserId, quantity, pickupDate, pickupLocation, notes, authentication.getName());
+        return ResponseEntity.ok(allocation);
+    }
+
     @GetMapping("/{id}/history")
     public ResponseEntity<?> getFoodHistory(@PathVariable Long id) {
         return ResponseEntity.ok(foodService.getFoodHistory(id));

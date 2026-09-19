@@ -9,23 +9,31 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/food-requests")
+@RequestMapping({"/api/food-requests", "/api/requests"})
 public class FoodRequestController {
 
     @Autowired
     private FoodRequestService foodRequestService;
 
-    @PostMapping
+    @PostMapping({"", "/food/{foodId}"})
     @PreAuthorize("hasRole('RECEIVER')")
-    public ResponseEntity<FoodRequestDTO> createRequest(@RequestBody Map<String, Object> payload, Authentication authentication) {
-        Object foodIdObj = payload.get("foodItemId");
-        Long foodItemId = (foodIdObj instanceof Number) ? ((Number) foodIdObj).longValue() : Long.valueOf(foodIdObj.toString());
+    public ResponseEntity<FoodRequestDTO> createRequest(
+            @PathVariable(required = false) Long foodId,
+            @RequestBody Map<String, Object> payload,
+            Authentication authentication
+    ) {
+        Long foodItemId = foodId;
+        if (foodItemId == null && payload.containsKey("foodItemId")) {
+            Object foodIdObj = payload.get("foodItemId");
+            foodItemId = (foodIdObj instanceof Number) ? ((Number) foodIdObj).longValue() : Long.valueOf(foodIdObj.toString());
+        }
 
-        Object qtyObj = payload.get("requestedQuantity");
+        Object qtyObj = payload.containsKey("requestedQuantity") ? payload.get("requestedQuantity") : payload.get("quantity");
         Double quantity = (qtyObj instanceof Number) ? ((Number) qtyObj).doubleValue() : Double.valueOf(qtyObj.toString());
 
         String notes = payload.containsKey("notes") && payload.get("notes") != null ? payload.get("notes").toString() : "";
@@ -60,26 +68,29 @@ public class FoodRequestController {
             Authentication authentication
     ) {
         String pickupLocation = payload != null && payload.get("pickupLocation") != null ? payload.get("pickupLocation").toString() : null;
-        java.time.LocalDateTime pickupDate = null;
-        if (payload != null && payload.get("pickupDate") != null) {
-            pickupDate = java.time.LocalDateTime.parse(payload.get("pickupDate").toString());
+        LocalDateTime pickupDate = null;
+        if (payload != null) {
+            Object dateObj = payload.get("pickupDate") != null ? payload.get("pickupDate") : payload.get("scheduledDate");
+            if (dateObj != null) {
+                pickupDate = LocalDateTime.parse(dateObj.toString());
+            }
         }
         return ResponseEntity.ok(foodRequestService.allocateRequest(id, pickupLocation, pickupDate, authentication.getName()));
     }
 
-    @PutMapping("/{id}/ready-for-pickup")
+    @PutMapping({"/{id}/ready-for-pickup", "/{id}/ready"})
     @PreAuthorize("hasAnyRole('ADMIN', 'DONOR')")
     public ResponseEntity<FoodRequestDTO> markReadyForPickup(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(foodRequestService.markReadyForPickup(id, authentication.getName()));
     }
 
-    @PutMapping("/{id}/picked-up")
+    @PutMapping({"/{id}/picked-up", "/{id}/pickup"})
     @PreAuthorize("hasAnyRole('RECEIVER', 'ADMIN')")
     public ResponseEntity<FoodRequestDTO> markPickedUp(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(foodRequestService.markPickedUp(id, authentication.getName()));
     }
 
-    @PutMapping("/{id}/complete")
+    @PutMapping({"/{id}/complete", "/{id}/completed"})
     @PreAuthorize("hasAnyRole('RECEIVER', 'ADMIN')")
     public ResponseEntity<FoodRequestDTO> markCompleted(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(foodRequestService.markCompleted(id, authentication.getName()));
